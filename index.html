@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudentHub — Opportunities for Every Student</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">Student<span>Hub</span></a>
+    <div class="nav-links">
+      <a href="pages/listings.html">Browse</a>
+      <a href="pages/tracker.html">My Applications</a>
+      <a href="pages/login.html" class="btn-outline">Login</a>
+      <a href="pages/signup.html" class="btn-fill">Sign Up</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="badge">🎓 Built for Students</span>
+      <h1>Your <em>next big</em><br/>opportunity is here.</h1>
+      <p>Discover internships, scholarships, part-time jobs, competitions, and add-on courses — all in one place.</p>
+      <div class="hero-actions">
+        <a href="pages/listings.html" class="btn-fill big">Explore Opportunities</a>
+        <a href="pages/signup.html" class="btn-ghost big">Create Free Account</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>1,200+</strong><span>Listings</span></div>
+        <div><strong>340+</strong><span>Scholarships</span></div>
+        <div><strong>800+</strong><span>Students</span></div>
+      </div>
+    </div>
+    <div class="hero-cards">
+      <div class="float-card c1">🏢 Google Internship<br/><small>Software Eng · Remote</small></div>
+      <div class="float-card c2">🏆 NASA Competition<br/><small>Deadline: Aug 2025</small></div>
+      <div class="float-card c3">💰 Merit Scholarship<br/><small>Up to ₹1,00,000</small></div>
+      <div class="float-card c4">📘 UI/UX Course<br/><small>Free · Coursera</small></div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories">
+    <h2>Browse by Category</h2>
+    <div class="cat-grid">
+      <a href="pages/listings.html?type=internship" class="cat-card">
+        <span class="cat-icon">💼</span>
+        <h3>Internships</h3>
+        <p>Real-world experience at top companies</p>
+      </a>
+      <a href="pages/listings.html?type=scholarship" class="cat-card">
+        <span class="cat-icon">🎓</span>
+        <h3>Scholarships</h3>
+        <p>Funding for your education & dreams</p>
+      </a>
+      <a href="pages/listings.html?type=job" class="cat-card">
+        <span class="cat-icon">⏰</span>
+        <h3>Part-Time Jobs</h3>
+        <p>Earn while you learn</p>
+      </a>
+      <a href="pages/listings.html?type=competition" class="cat-card">
+        <span class="cat-icon">🏆</span>
+        <h3>Competitions</h3>
+        <p>Showcase your skills & win prizes</p>
+      </a>
+      <a href="pages/listings.html?type=course" class="cat-card">
+        <span class="cat-icon">📘</span>
+        <h3>Add-On Courses</h3>
+        <p>Upskill with certified programs</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="featured">
+    <div class="section-header">
+      <h2>Featured Opportunities</h2>
+      <a href="pages/listings.html">View all →</a>
+    </div>
+    <div class="cards-grid" id="featuredCards"></div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to find your opportunity?</h2>
+    <p>Join thousands of students already using StudentHub.</p>
+    <a href="pages/signup.html" class="btn-fill big">Get Started — It's Free</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span class="logo">Student<span>Hub</span></span>
+      <p>Made with ❤️ for students everywhere.</p>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

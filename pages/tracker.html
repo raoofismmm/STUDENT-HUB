@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Applications — StudentHub</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="logo">Student<span>Hub</span></a>
+    <div class="nav-links">
+      <a href="listings.html">Browse</a>
+      <a href="tracker.html" style="color:var(--accent)">My Applications</a>
+      <a href="#" class="btn-outline" id="navUser">Profile</a>
+      <a href="#" class="btn-fill" id="navLogout">Logout</a>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  </nav>
+
+  <div class="tracker-page">
+
+    <!-- Profile Bar -->
+    <div class="profile-bar" id="profileBar" style="display:none">
+      <div class="avatar" id="avatarInitial">S</div>
+      <div class="profile-info">
+        <h3 id="profileName">Student Name</h3>
+        <p id="profileEmail">email@college.edu</p>
+        <p id="profileCollege" style="font-size:0.8rem;color:var(--accent)"></p>
+      </div>
+    </div>
+
+    <!-- Not logged in -->
+    <div id="notLoggedIn" style="display:none;text-align:center;padding:4rem 1rem;">
+      <p style="font-size:3rem">🔒</p>
+      <h2 style="margin:1rem 0 0.5rem">Login to track your applications</h2>
+      <p style="color:var(--muted);margin-bottom:2rem">Keep track of every opportunity you apply to.</p>
+      <a href="login.html" class="btn-fill big">Login Now</a>
+      &nbsp;
+      <a href="signup.html" class="btn-ghost big">Sign Up Free</a>
+    </div>
+
+    <!-- Tracker Content -->
+    <div id="trackerContent" style="display:none">
+      <h1>My Applications</h1>
+      <p style="color:var(--muted);margin-top:0.3rem">Track the status of all your applications.</p>
+
+      <div class="tracker-stats" id="trackerStats"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;" id="statusFilters"></div>
+        <a href="listings.html" class="btn-fill" style="font-size:0.85rem;padding:0.5rem 1rem;">+ Apply for More</a>
+      </div>
+
+      <div id="emptyState" style="display:none;text-align:center;padding:3rem;color:var(--muted)">
+        <p style="font-size:2rem">📭</p>
+        <p>No applications yet. <a href="listings.html" style="color:var(--accent)">Start exploring!</a></p>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="tracker-table" id="appTable">
+          <thead>
+            <tr>
+              <th>Opportunity</th>
+              <th>Type</th>
+              <th>Organization</th>
+              <th>Applied On</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="appTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    const STATUSES = ['applied','shortlisted','selected','rejected'];
+
+    function updateStatus(id, newStatus) {
+      let apps = getApplications();
+      const idx = apps.findIndex(a => a.id === id);
+      if (idx > -1) {
+        apps[idx].status = newStatus;
+        localStorage.setItem('sh_apps', JSON.stringify(apps));
+        renderTracker();
+        showToast(`Status updated to "${newStatus}"`);
+      }
+    }
+
+    function removeApp(id) {
+      let apps = getApplications();
+      apps = apps.filter(a => a.id !== id);
+      localStorage.setItem('sh_apps', JSON.stringify(apps));
+      renderTracker();
+      showToast('Application removed.');
+    }
+
+    let statusFilter = 'all';
+
+    function renderTracker() {
+      let apps = getApplications();
+      const counts = { all: apps.length };
+      STATUSES.forEach(s => counts[s] = apps.filter(a => a.status === s).length);
+
+      // Stats
+      document.getElementById('trackerStats').innerHTML = `
+        <div class="stat-pill"><strong>${counts.all}</strong><span>Total</span></div>
+        <div class="stat-pill"><strong>${counts.applied}</strong><span>Applied</span></div>
+        <div class="stat-pill"><strong>${counts.shortlisted}</strong><span>Shortlisted</span></div>
+        <div class="stat-pill"><strong>${counts.selected}</strong><span>Selected 🎉</span></div>
+        <div class="stat-pill"><strong>${counts.rejected}</strong><span>Rejected</span></div>
+      `;
+
+      // Status filter buttons
+      const sfContainer = document.getElementById('statusFilters');
+      const sfOptions = ['all','applied','shortlisted','selected','rejected'];
+      sfContainer.innerHTML = sfOptions.map(s => `
+        <button class="filter-btn ${statusFilter === s ? 'active' : ''}" onclick="statusFilter='${s}';renderTracker()">
+          ${s.charAt(0).toUpperCase() + s.slice(1)}${s !== 'all' ? ` (${counts[s]})` : ''}
+        </button>
+      `).join('');
+
+      // Filter
+      let filtered = statusFilter === 'all' ? apps : apps.filter(a => a.status === statusFilter);
+
+      const tbody = document.getElementById('appTableBody');
+      const empty = document.getElementById('emptyState');
+      const table = document.getElementById('appTable');
+
+      if (filtered.length === 0) {
+        empty.style.display = 'block'; table.style.display = 'none';
+      } else {
+        empty.style.display = 'none'; table.style.display = 'table';
+        tbody.innerHTML = filtered.map(app => `
+          <tr>
+            <td><strong>${app.title}</strong></td>
+            <td><span class="opp-type type-${app.type}" style="font-size:0.7rem">${TYPE_LABELS[app.type]}</span></td>
+            <td>${app.org}</td>
+            <td>${app.appliedOn}</td>
+            <td>
+              <select onchange="updateStatus(${app.id}, this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:0.3rem 0.5rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">
+                ${STATUSES.map(s => `<option value="${s}" ${app.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+              </select>
+            </td>
+            <td>
+              <button class="btn-sm btn-save" onclick="removeApp(${app.id})" style="font-size:0.75rem;padding:0.3rem 0.7rem;">Remove</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getUser();
+
+      if (!user) {
+        document.getElementById('notLoggedIn').style.display = 'block';
+        document.getElementById('trackerContent').style.display = 'none';
+        document.getElementById('profileBar').style.display = 'none';
+      } else {
+        document.getElementById('notLoggedIn').style.display = 'none';
+        document.getElementById('trackerContent').style.display = 'block';
+        document.getElementById('profileBar').style.display = 'flex';
+
+        document.getElementById('profileName').textContent = user.name;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profileCollege').textContent = user.college || '';
+        document.getElementById('avatarInitial').textContent = user.name.charAt(0).toUpperCase();
+
+        document.getElementById('navUser').textContent = user.name.split(' ')[0];
+        document.getElementById('navLogout').onclick = (e) => {
+          e.preventDefault(); localStorage.removeItem('sh_user'); window.location.href = '../index.html';
+        };
+
+        renderTracker();
+      }
+    });
+  </script>
+</body>
+</html>

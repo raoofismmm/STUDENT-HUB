@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up — StudentHub</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="logo">Student<span>Hub</span></a>
+    <div class="nav-links">
+      <a href="listings.html">Browse</a>
+      <a href="login.html" class="btn-outline">Login</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <h2>Create your account 🚀</h2>
+      <p class="sub">Join thousands of students finding their next opportunity.</p>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Arjun Sharma"/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@college.edu"/>
+      </div>
+      <div class="form-group">
+        <label>College / University</label>
+        <input type="text" id="college" placeholder="IIT Madras"/>
+      </div>
+      <div class="form-group">
+        <label>Year of Study</label>
+        <select id="year">
+          <option value="">Select year</option>
+          <option>1st Year</option>
+          <option>2nd Year</option>
+          <option>3rd Year</option>
+          <option>4th Year</option>
+          <option>Postgraduate</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="At least 6 characters"/>
+      </div>
+
+      <div id="err" style="color:#ff6464;font-size:0.85rem;margin-bottom:0.8rem;display:none;"></div>
+
+      <button class="form-btn" onclick="handleSignup()">Create Account</button>
+
+      <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    function handleSignup() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const college = document.getElementById('college').value.trim();
+      const year = document.getElementById('year').value;
+      const password = document.getElementById('password').value;
+      const err = document.getElementById('err');
+
+      if (!name || !email || !college || !year || !password) {
+        err.style.display='block'; err.textContent='Please fill all fields.'; return;
+      }
+      if (password.length < 6) {
+        err.style.display='block'; err.textContent='Password must be at least 6 characters.'; return;
+      }
+
+      // Save to "users db"
+      const users = JSON.parse(localStorage.getItem('sh_users') || '[]');
+      if (users.find(u => u.email === email)) {
+        err.style.display='block'; err.textContent='Email already registered.'; return;
+      }
+      users.push({ name, email, college, year, password });
+      localStorage.setItem('sh_users', JSON.stringify(users));
+
+      // Auto login
+      setUser({ name, email, college, year });
+      showToast('🎉 Welcome to StudentHub, ' + name + '!');
+      setTimeout(() => { window.location.href = 'listings.html'; }, 900);
+    }
+  </script>
+</body>
+</html>

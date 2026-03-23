@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — StudentHub</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="logo">Student<span>Hub</span></a>
+    <div class="nav-links">
+      <a href="listings.html">Browse</a>
+      <a href="signup.html" class="btn-fill">Sign Up</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <h2>Welcome back 👋</h2>
+      <p class="sub">Log in to track your applications and discover opportunities.</p>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@college.edu"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••"/>
+      </div>
+
+      <div id="err" style="color:#ff6464;font-size:0.85rem;margin-bottom:0.8rem;display:none;"></div>
+
+      <button class="form-btn" onclick="handleLogin()">Log In</button>
+
+      <p class="auth-switch">Don't have an account? <a href="signup.html">Sign up free</a></p>
+
+      <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border);text-align:center;">
+        <p style="color:var(--muted);font-size:0.8rem;margin-bottom:0.8rem;">Demo Account</p>
+        <button class="btn-sm btn-save" style="width:100%;padding:0.6rem;" onclick="demoLogin()">Login with Demo Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    function handleLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const err = document.getElementById('err');
+
+      if (!email || !password) { err.style.display='block'; err.textContent='Please fill all fields.'; return; }
+
+      // Check registered users
+      const users = JSON.parse(localStorage.getItem('sh_users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (user) {
+        setUser({ name: user.name, email: user.email, college: user.college });
+        showToast('Welcome back, ' + user.name + '!');
+        setTimeout(() => { window.location.href = 'tracker.html'; }, 800);
+      } else {
+        err.style.display = 'block';
+        err.textContent = 'Invalid email or password.';
+      }
+    }
+
+    function demoLogin() {
+      setUser({ name: 'Demo Student', email: 'demo@college.edu', college: 'Demo University' });
+      // Add some demo applications
+      if (!getApplications().length) {
+        const sample = [OPPORTUNITIES[0], OPPORTUNITIES[2], OPPORTUNITIES[4]];
+        sample.forEach((o,i) => {
+          const statuses = ['applied','shortlisted','applied'];
+          const apps = getApplications();
+          apps.push({ ...o, status: statuses[i], appliedOn: new Date().toLocaleDateString('en-IN') });
+          localStorage.setItem('sh_apps', JSON.stringify(apps));
+        });
+      }
+      showToast('Logged in as Demo Student!');
+      setTimeout(() => { window.location.href = 'tracker.html'; }, 800);
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+  </script>
+</body>
+</html>

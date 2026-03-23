@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse Opportunities — StudentHub</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="logo">Student<span>Hub</span></a>
+    <div class="nav-links">
+      <a href="listings.html" style="color:var(--accent)">Browse</a>
+      <a href="tracker.html">My Applications</a>
+      <a href="login.html" class="btn-outline" id="navLogin">Login</a>
+      <a href="signup.html" class="btn-fill" id="navSignup">Sign Up</a>
+    </div>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  </nav>
+
+  <div class="listings-page">
+    <h1>Browse Opportunities</h1>
+    <p class="sub">Find internships, scholarships, jobs, competitions & courses.</p>
+
+    <div class="filters">
+      <input class="search-bar" id="searchInput" type="text" placeholder="🔍  Search by title, org or keyword..." oninput="renderListings()"/>
+      <button class="filter-btn active" data-type="all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" data-type="internship" onclick="setFilter('internship')">💼 Internships</button>
+      <button class="filter-btn" data-type="scholarship" onclick="setFilter('scholarship')">🎓 Scholarships</button>
+      <button class="filter-btn" data-type="job" onclick="setFilter('job')">⏰ Part-Time</button>
+      <button class="filter-btn" data-type="competition" onclick="setFilter('competition')">🏆 Competitions</button>
+      <button class="filter-btn" data-type="course" onclick="setFilter('course')">📘 Courses</button>
+    </div>
+
+    <p id="resultCount" style="color:var(--muted);font-size:0.85rem;margin-bottom:1.2rem;"></p>
+    <div class="cards-grid" id="listingsGrid"></div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    let activeFilter = 'all';
+
+    // Read URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    if (typeParam) activeFilter = typeParam;
+
+    function setFilter(type) {
+      activeFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.type === type);
+      });
+      renderListings();
+    }
+
+    function renderListings() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      let filtered = OPPORTUNITIES.filter(o => {
+        const matchType = activeFilter === 'all' || o.type === activeFilter;
+        const matchSearch = !q || o.title.toLowerCase().includes(q) || o.org.toLowerCase().includes(q) || o.tags.some(t => t.includes(q)) || o.desc.toLowerCase().includes(q);
+        return matchType && matchSearch;
+      });
+
+      const grid = document.getElementById('listingsGrid');
+      const count = document.getElementById('resultCount');
+      count.textContent = `${filtered.length} opportunit${filtered.length !== 1 ? 'ies' : 'y'} found`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">
+          <p style="font-size:2rem">🔍</p>
+          <p>No results found. Try a different search or filter.</p>
+        </div>`;
+      } else {
+        grid.innerHTML = filtered.map(createCard).join('');
+      }
+    }
+
+    function updateNav() {
+      const user = getUser();
+      if (user) {
+        document.getElementById('navLogin').textContent = user.name.split(' ')[0];
+        document.getElementById('navLogin').href = 'tracker.html';
+        document.getElementById('navSignup').textContent = 'Logout';
+        document.getElementById('navSignup').href = '#';
+        document.getElementById('navSignup').onclick = (e) => {
+          e.preventDefault(); localStorage.removeItem('sh_user'); location.reload();
+        };
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeParam) setFilter(typeParam);
+      updateNav();
+      renderListings();
+    });
+  </script>
+</body>
+</html>
