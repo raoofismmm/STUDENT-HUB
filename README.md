@@ -1,4 +1,4 @@
-# StudentHub!
+# StudentHub
 
 A student opportunity platform — find internships, scholarships, part-time jobs, competitions, and add-on courses all in one place.
 
