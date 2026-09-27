@@ -7,7 +7,6 @@ A student opportunity platform — find internships, scholarships, part-time job
 Deployed on GitHub Pages: `https://<your-username>.github.io/studenthub/`
 
 ## ✨ Features
-
 - 🔍 **Search & Filter** — Filter by category and keyword search across all listings
 - 👤 **Student Login / Signup** — Register with name, email, college, and year
 - 📋 **Application Tracker** — Track applied opportunities with status updates (Applied → Shortlisted → Selected / Rejected)
